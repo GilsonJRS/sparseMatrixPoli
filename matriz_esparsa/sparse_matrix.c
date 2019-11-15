@@ -106,3 +106,57 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
         }
     }
 }
+
+
+void removeElement(SparseMatrix *matrix, int i, int j){
+    ElementNode *percorre = matrix;
+
+    while(percorre->col < j)
+        percorre = percorre->prox_col;
+    //verifica se a linha existe
+    if(percorre->col == j){
+        //percorre a matriz verticalmente
+        while(percorre->row < i)
+            percorre = percorre->prox_row;
+            //verifica se a coluna existe e remove o elemento
+        if((percorre->prox_row)->row == i){
+            ElementNode *remove = percorre->prox_row;
+            percorre->prox_row = (percorre->prox_row)->prox_row;
+            free(remove);
+            //verifica se a linha está vazia. (se o header aponta para si próprio)
+            if(percorre->prox_col == percorre){
+                //remove aquela linha, pois tem mais nenhum elemento
+                percorre = matrix;
+                //encontra linha i
+                while((percorre->prox_row)->row != i)
+                    percorre = percorre->prox_row;
+                ElementNode *remove = percorre->prox_row;
+                percorre->prox_row = (percorre->prox_row)->prox_row;
+                free(remove);                
+            }
+            percorre = matrix;
+            //encontra coluna j
+            while((percorre->prox_col)->col != j)
+                percorre = percorre->prox_col;
+            //se tiver sem elementos remove a coluna
+            if((percorre->prox_col)->prox_row == percorre->prox_col){
+                ElementNode *remove = percorre->prox_col;
+                percorre->prox_col = (percorre->prox_col)->prox_col;
+                free(remove);
+            }
+        }
+    }
+}
+
+void read_equations(){
+    FILE *arq = fopen("equacoes.txt", "r");
+    int i=0;
+    if(fp == NULL)
+        exit(1);
+    do{
+        char equacao[]
+        fscanf(arq, "%s", equacao);
+        i++;
+        printf("O valor de i eh: %d", i);
+    }while(EOF(arq));
+}
