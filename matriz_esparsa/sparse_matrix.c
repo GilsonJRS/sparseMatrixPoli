@@ -108,7 +108,7 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
 }
 
 
-void removeElement(SparseMatrix *matrix, int i, int j){
+void removeElement(ElementNode *matrix, int i, int j){
     ElementNode *percorre = matrix;
 
     while(percorre->col < j)
