@@ -2,16 +2,24 @@
 
 SparseMatrix *initMatrix(){
     SparseMatrix *head = (SparseMatrix *)malloc(sizeof(SparseMatrix));
-    head->colNum = 0;
-    head->rowNum = 0;
+    head->col = 0;
+    head->row = 0;
     head->prox_row = NULL;
     head->prox_col = NULL;
     return head;
 }
 
+HeaderNode *allocHeader(int index){
+    HeaderNode *newRow = (HeaderNode *)malloc(sizeof(HeaderNode));
+    newRow->IndexValue = index;
+    newRow->prox_row = NULL;
+    newRow->prox_col = NULL;
+    return newRow;
+}
+
 ElementNode *allocElement(int value, int i, int j){
     ElementNode *newElement = (ElementNode *)malloc(sizeof(ElementNode));
-    newElement->dataValue = value;
+    newElement->value = value;
     newElement->row = i;
     newElement->col = j;
     return newElement;
@@ -35,8 +43,8 @@ void insertElement(SparseMatrix *matrix, int value, int i, int j){
         matrix->prox_row = new_row;
 
     }else{//another adds or replace
-        HeaderNode *aux_col = matrix->prox_col, *aux_col_prev = matrix;
-        ElementNode *aux_row, *aux_row_prev;
+        HeaderNode *aux_col = matrix->prox_col;
+        ElementNode *aux_row;
 
         while(aux_col!=matrix){
 
@@ -49,25 +57,56 @@ void insertElement(SparseMatrix *matrix, int value, int i, int j){
                     if(aux_row->row == j){
                         aux_row->dataValue = value;
                     }
-                    else if(aux_row->row >)
 
                     aux_row = aux_row->prox_row;
-            }
+                }
                 break;
             }
-            /*
-                colum don't exist and the aux reaches a node
-                larger than the new 
-            */
-            else if(aux_col->IndexValue > i){
-                
-            }
-
-
-
-            //go to next col
-            aux_col = aux_col->prox_col;
-            aux_col_prev = aux_col;
         }
     }
+}
+
+void removeElement(SparseMatrix *matrix, int i, int j){
+    ElementNode *percorre = matrix;
+
+    while(percorre->col < j)
+        percorre = percorre->prox_col;
+    //verifica se a linha existe
+    if(percorre->col == j){
+        //percorre a matriz verticalmente
+        while(percorre->row < i)
+            percorre = percorre->prox_row;
+            //verifica se a coluna existe e remove o elemento
+        if((percorre->prox_row)->row == i){
+            ElementNode *remove = percorre->prox_row;
+            percorre->prox_row = (percorre->prox_row)->prox_row;
+            free(remove);
+            //verifica se a linha está vazia. (se o header aponta para si próprio)
+            if(percorre->prox_col == percorre){
+                //remove aquela linha, pois tem mais nenhum elemento
+                percorre = matrix;
+                //encontra linha i
+                while((percorre->prox_row)->row != i)
+                    percorre = percorre->prox_row;
+                ElementNode *remove = percorre->prox_row;
+                percorre->prox_row = (percorre->prox_row)->prox_row;
+                free(remove);                
+            }
+            percorre = matrix;
+            //encontra coluna j
+            while((percorre->prox_col)->col != j)
+                percorre = percorre->prox_col;
+            //se tiver sem elementos remove a coluna
+            if((percorre->prox_col)->prox_row == percorre->prox_col){
+                ElementNode *remove = percorre->prox_col;
+                percorre->prox_col = (percorre->prox_col)->prox_col;
+                free(remove);
+            }
+        }
+    }
+}
+
+char read_line(FILE *arq){
+    fgetc()
+
 }
