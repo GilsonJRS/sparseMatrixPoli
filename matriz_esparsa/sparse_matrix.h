@@ -8,12 +8,8 @@ struct no{
     struct no *prox_col, *prox_row;
 };
 typedef struct no ElementNode;
-struct sparse{
-    int rowNum, colNum;
-    ElementNode *prox_col, *prox_row;
-};
-typedef struct sparse SparseMatrix;
 
 /// Função para iniciar matriz
-SparseMatrix *initMatrix();
-void insertElement(SparseMatrix *matrix, int value, int i, int j);
+ElementNode *initMatrix();
+ElementNode *allocHeader(int i, int j);
+void insertElement(ElementNode *matrix, int value, int i, int j);
