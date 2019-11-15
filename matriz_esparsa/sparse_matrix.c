@@ -2,24 +2,16 @@
 
 SparseMatrix *initMatrix(){
     SparseMatrix *head = (SparseMatrix *)malloc(sizeof(SparseMatrix));
-    head->col = 0;
-    head->row = 0;
+    head->colNum = 0;
+    head->rowNum = 0;
     head->prox_row = NULL;
     head->prox_col = NULL;
     return head;
 }
 
-HeaderNode *allocHeader(int index){
-    HeaderNode *newRow = (HeaderNode *)malloc(sizeof(HeaderNode));
-    newRow->IndexValue = index;
-    newRow->prox_row = NULL;
-    newRow->prox_col = NULL;
-    return newRow;
-}
-
 ElementNode *allocElement(int value, int i, int j){
     ElementNode *newElement = (ElementNode *)malloc(sizeof(ElementNode));
-    newElement->value = value;
+    newElement->dataValue = value;
     newElement->row = i;
     newElement->col = j;
     return newElement;
@@ -43,8 +35,8 @@ void insertElement(SparseMatrix *matrix, int value, int i, int j){
         matrix->prox_row = new_row;
 
     }else{//another adds or replace
-        HeaderNode *aux_col = matrix->prox_col;
-        ElementNode *aux_row;
+        HeaderNode *aux_col = matrix->prox_col, *aux_col_prev = matrix;
+        ElementNode *aux_row, *aux_row_prev;
 
         while(aux_col!=matrix){
 
@@ -57,11 +49,25 @@ void insertElement(SparseMatrix *matrix, int value, int i, int j){
                     if(aux_row->row == j){
                         aux_row->dataValue = value;
                     }
+                    else if(aux_row->row >)
 
                     aux_row = aux_row->prox_row;
-                }
+            }
                 break;
             }
+            /*
+                colum don't exist and the aux reaches a node
+                larger than the new 
+            */
+            else if(aux_col->IndexValue > i){
+                
+            }
+
+
+
+            //go to next col
+            aux_col = aux_col->prox_col;
+            aux_col_prev = aux_col;
         }
     }
 }
