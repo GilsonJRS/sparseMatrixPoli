@@ -65,19 +65,18 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
 
         while(aux_col!=matrix){
             //colum exist
-            if(aux_col->col == i){
+            if(aux_col->col == j){
                 aux_row = aux_col;
                 while(aux_row!=aux_col){
                     //row exists
-                    if(aux_row->row == j){
+                    if(aux_row->row == i){
                         aux_row->dataValue = value;
                     }
                     //add between two nodes
-                    else if(aux_row->prox_row->row > j){
+                    else if(aux_row->prox_row->row > i){
                         ElementNode *new_element = allocElement(value, i, j);
                         new_element->prox_row = aux_row->prox_row;
                         aux_row->prox_row = new_element;
-
                     }
                     //else if desnecessauro? pensar depois
                     else if(aux_row->prox_row == aux_row){
@@ -87,18 +86,19 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                         while(aux_row_1->prox_col!=-1){
                             aux_row_1 = aux_row_1->prox_col;
                         }
-                    }
+                        new_row_1->prox_row = aux_row_1->prox_row;
+                        aux_row_1->prox_row = new_row_1;
 
+                    }
                     aux_row = aux_row->prox_row;
-            }
-                break;
+                }   
             }
             /*
                 colum don't exist and the aux reaches a node
                 larger than the new 
             */
-            else if(aux_col->IndexValue > i){
-                
+            else if(aux_col->prox_col->col > j){
+                ElementNode()
             }
             //go to next col
             aux_col = aux_col->prox_col;
