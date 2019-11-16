@@ -41,8 +41,8 @@ ElementNode *allocHeader(int i, int j){
 }
 
 void insertElement(ElementNode *matrix, int value, int i, int j){
-
-    //first add
+    
+    //first ad-----------------OK
     if(matrix->prox_row == NULL && matrix->prox_col == NULL){
         ElementNode *new_row = allocHeader(i, -1),*new_col = allocHeader(-1, j), 
         *new_element = allocElement(value, i , j);
@@ -61,88 +61,137 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
     }
     else{//another adds or replace
         ElementNode *aux_col = matrix->prox_col;
-        ElementNode *aux_row;
-
+        //aux_row_colum used for rows
+        ElementNode *aux_row, *aux_row_colum;
+        
         while(aux_col!=matrix){
             //colum exist
             if(aux_col->col == j){
                 aux_row = aux_col;
-                while(aux_row!=aux_col){
-                    //row exists
+                aux_row_colum = matrix;
+                do{
+                    //row exists ----------------------------OK
                     if(aux_row->row == i){
                         aux_row->dataValue = value;
                     }
-                    //add between two nodes
+                    //add between two nodes -------------------OK
                     else if(aux_row->prox_row->row > i){
-                        ElementNode *new_element = allocElement(value, i, j), *aux_row_1 = aux_row, *new_row_1 = allocHeader(i, -1);
+                        ElementNode *new_element = allocElement(value, i, j), *new_row_1 = allocHeader(i, -1);
+                        
                         new_element->prox_row = aux_row->prox_row;
                         aux_row->prox_row = new_element;
-                        while(aux_row_1->prox_col!=-1){
-                            aux_row_1 = aux_row_1->prox_col;
-                        }
-                        new_row_1->prox_row = aux_row_1->prox_row;
-                        aux_row_1->prox_row = new_row_1;
-                    }
-                    //else if desnecessauro? pensar depois
-                    else if(aux_row->prox_row == aux_row){
-                        ElementNode *new_row_1 = allocHeader(i, -1), *new_element = allocElement(value, i, j), *aux_row_1 = aux_row;
-                        new_element->prox_row = aux_row->prox_row;
-                        aux_row->prox_row = new_element;
-                        while(aux_row_1->prox_col!=-1){
-                            aux_row_1 = aux_row_1->prox_col;
-                        }
-                        new_row_1->prox_row = aux_row_1->prox_row;
-                        aux_row_1->prox_row = new_row_1;
+                        
+                        new_row_1->prox_row = aux_row_colum->prox_row;
+                        aux_row_colum->prox_row = new_row_1;
+                        new_row_1->prox_col = new_element;
 
+                        break;
+                    }
+                    //else if desnecessauro? pensar depois -------------------------OK
+                    else if(aux_row->prox_row == aux_col){
+                        ElementNode *new_row_1 = allocHeader(i, -1), *new_element = allocElement(value, i, j);
+                        
+                        new_element->prox_row = aux_row->prox_row;
+                        aux_row->prox_row = new_element;
+
+                        new_row_1->prox_row = aux_row_colum->prox_row;
+                        aux_row_colum->prox_row = new_row_1;
+                        new_row_1->prox_col = new_element;
+                        break;
                     }
                     aux_row = aux_row->prox_row;
-                }   
+                    aux_row_colum = aux_row_colum->prox_row;
+                }while(aux_row!=aux_col);
             }
             /*
                 colum don't exist and the aux reaches a node
                 larger than the new 
             */
             else if(aux_col->prox_col->col > j){
+                
                 ElementNode *new_element = allocElement(value, i, j), *new_col=allocHeader(-1, j),
-                *aux_row=matrix->prox_row;
+                *aux_row_col;
                 new_col->prox_col = aux_col->prox_col;
+                
                 aux_col->prox_col = new_col;
+                
                 new_col->prox_row = new_element;
-
+                
                 //verify if the line i exist in the matrix
-                while(aux_row!=matrix){
-                    if(aux_row->row == i){
-                        while(aux_row->prox_col!=aux_row){
-                            
-                            aux_row = aux_row->prox_col;
+                //aux_row_colum = matrix;
+                while(aux_row_colum!=matrix){
+                    if(aux_row_colum->row == i){
+                        aux_row_col = aux_row_colum;
+                        while(aux_row_col->prox_col->col < j){
+                            aux_row_col = aux_row_col->prox_col;
                         }
+                        aux_row_col->prox_col = new_element;
+                        new_element->prox_col = aux_row_colum;
+                        break;
                     }
-                    else if(aux_row->prox_row->row > i){
+                    else if(aux_row_colum->prox_row->row > i){
                         ElementNode *new_row_1 = allocHeader(i, -1);
+
                         new_row_1->prox_col = new_element;
                         new_row_1->prox_row = aux_row->prox_row;
                         aux_row->prox_row = new_row_1;
                         new_element->prox_col = new_row_1;
-                    }
-                    else if(aux_row->prox_row == aux_row){
+                    }//mudar == matrix
+                    else if(aux_row_colum->prox_row == aux_row){
                         ElementNode *new_row_1 = allocHeader(i, -1);
+
                         new_row_1->prox_row = matrix;
                         new_row_1->prox_col = new_element;
                         aux_row->prox_row = new_row_1;
                     }
-                    aux_row = aux_row->prox_row;
-                }
-
+                    aux_row_colum=aux_row_colum->prox_row;
+                } 
             }
-
+            
             /*
                 reaches the end of the col list
             */
             else if(aux_col->prox_col == matrix){
-                ElementNode *new_element = allocElement(value, i, j), *new_col = allocHeader(-1, j);
+                //printf("Chegou ao final da lista de colunas\n");
+                ElementNode *new_element = allocElement(value, i, j), *new_col = allocHeader(-1, j),
+                *aux_row_1 = matrix;
+
                 new_col->prox_col = matrix;
                 aux_col->prox_col = new_col;
-
+                new_col->prox_row = new_element;
+                /*
+                    verify the existence of the row i
+                */
+                do{
+                    //row exist, so link with new element -------OK
+                    if(aux_row_1->row == i){
+                        ElementNode *aux_row_2 = aux_row_1;
+                        while(aux_row_2->col < j && aux_row_2->prox_col != aux_row_1){
+                            aux_row_2=aux_row_2->prox_col;
+                        }
+                        aux_row_2->prox_col = new_element;
+                        new_element->prox_col = aux_row_1; 
+                    }
+                    /*
+                        finds a row bigger than i
+                    */
+                    else if(aux_row_1->prox_row->row > i){
+                        printf("HERE");
+                        ElementNode *aux_row_2 = aux_row_1;
+                    }
+                    /*
+                        reaches the end of row's list and don't find i ---------OK
+                    */
+                    else if(aux_row_1->prox_row == matrix){
+                        ElementNode *new_row = allocHeader(i, -1);
+                        aux_row_1->prox_row = new_row;
+                        new_row->prox_row = matrix;
+                        new_row->prox_col = new_element;
+                        new_element->prox_col = new_row;
+                    }
+                    aux_row_1 = aux_row_1->prox_row;
+                }while(aux_row_1 != matrix);
+                break;
             }
 
             //go to next col
