@@ -74,9 +74,14 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                     }
                     //add between two nodes
                     else if(aux_row->prox_row->row > i){
-                        ElementNode *new_element = allocElement(value, i, j);
+                        ElementNode *new_element = allocElement(value, i, j), *aux_row_1 = aux_row, *new_row_1 = allocHeader(i, -1);
                         new_element->prox_row = aux_row->prox_row;
                         aux_row->prox_row = new_element;
+                        while(aux_row_1->prox_col!=-1){
+                            aux_row_1 = aux_row_1->prox_col;
+                        }
+                        new_row_1->prox_row = aux_row_1->prox_row;
+                        aux_row_1->prox_row = new_row_1;
                     }
                     //else if desnecessauro? pensar depois
                     else if(aux_row->prox_row == aux_row){
@@ -98,15 +103,53 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                 larger than the new 
             */
             else if(aux_col->prox_col->col > j){
-                ElementNode()
+                ElementNode *new_element = allocElement(value, i, j), *new_col=allocHeader(-1, j),
+                *aux_row=matrix->prox_row;
+                new_col->prox_col = aux_col->prox_col;
+                aux_col->prox_col = new_col;
+                new_col->prox_row = new_element;
+
+                //verify if the line i exist in the matrix
+                while(aux_row!=matrix){
+                    if(aux_row->row == i){
+                        while(aux_row->prox_col!=aux_row){
+                            
+                            aux_row = aux_row->prox_col;
+                        }
+                    }
+                    else if(aux_row->prox_row->row > i){
+                        ElementNode *new_row_1 = allocHeader(i, -1);
+                        new_row_1->prox_col = new_element;
+                        new_row_1->prox_row = aux_row->prox_row;
+                        aux_row->prox_row = new_row_1;
+                        new_element->prox_col = new_row_1;
+                    }
+                    else if(aux_row->prox_row == aux_row){
+                        ElementNode *new_row_1 = allocHeader(i, -1);
+                        new_row_1->prox_row = matrix;
+                        new_row_1->prox_col = new_element;
+                        aux_row->prox_row = new_row_1;
+                    }
+                    aux_row = aux_row->prox_row;
+                }
+
             }
+
+            /*
+                reaches the end of the col list
+            */
+            else if(aux_col->prox_col == matrix){
+                ElementNode *new_element = allocElement(value, i, j), *new_col = allocHeader(-1, j);
+                new_col->prox_col = matrix;
+                aux_col->prox_col = new_col;
+
+            }
+
             //go to next col
             aux_col = aux_col->prox_col;
-            aux_col_prev = aux_col;
         }
     }
 }
-
 
 void removeElement(ElementNode *matrix, int i, int j){
     ElementNode *percorre = matrix;
@@ -148,15 +191,110 @@ void removeElement(ElementNode *matrix, int i, int j){
     }
 }
 
+char* first_equation_to_string(){
+    FILE *arq = fopen("equacoes.txt", "r");
+
+    if(arq == NULL)
+        exit(1);
+    int tam_equacao = 0;
+    char *equacao = NULL, c;
+    //percorre o arquivo até o primeiro /n
+    do{
+        c = fgetc(arq);
+        if(c != '\n'){
+            tam_equacao++;  
+            equacao = realloc(equacao, tam_equacao*sizeof(char));
+            if(equacao == NULL)
+                exit(1);
+            *(equacao+(tam_equacao-1)) = c;
+        }
+    }while(c != '\n');
+    
+    equacao = realloc(equacao, (tam_equacao+1)*sizeof(char));
+    *(equacao+tam_equacao) = '\0';
+    fclose(arq);
+
+    return equacao;
+}
+
+int Pot10(int i){
+    if(i == 0)
+        return 1;
+    int potencia10=1;
+    while(i>0){
+        potencia10 = potencia10*10;
+        i--;
+    }
+    return potencia10;
+}
+
+void Store_Values_MatrizEsparsa(char *equacao, int *size_from_start){
+    int posicao = 0, num, pot10, coeficiente;
+    //percorre a string até achar '\0'
+    while(*(equacao+*(size_from_start)) != '\0'){
+        //reset das variaveis
+        num = 0;
+        coeficiente = 0;
+        posicao = 0;
+        pot10 = 0;
+        //Percorre a string até achar o proximo espaço para transformar o valor em inteiro
+        while(*(equacao+posicao+*(size_from_start)) != ' ' && *(equacao+posicao+*(size_from_start)) != '\0'){
+            posicao++;
+        }
+        //para transformar o valor em uma posicao valida dentro do vetor
+        for(int aux = (posicao-1); aux >= 0; aux--){    
+            num = num + (*(equacao+aux+*(size_from_start))-'0')*Pot10(pot10);
+            pot10++;
+            //printf("NUM = %d\n", num);
+        }
+        //Pular a posicao do espaco que pode aparecer no posicao = posicao+1;
+        if(*(equacao+posicao+*(size_from_start)) == ' ')
+            posicao++;
+        *(size_from_start) = *(size_from_start) + posicao;
+
+        posicao = 0;
+        pot10 = 0;
+
+        //Percorre a string até achar o proximo espaço para transformar o valor em inteiro
+        while(*(equacao+posicao+*(size_from_start)) != ' ' && *(equacao+posicao+*(size_from_start)) != '\0')
+            posicao++;
+        //printf("posicao = %d\n", posicao);
+        //para transformar o valor em uma posicao valida dentro do vetor
+        for(int aux = (posicao-1); aux >= 0; aux--){    
+            coeficiente = coeficiente + (*(equacao+aux+*(size_from_start))-'0')*Pot10(pot10);
+            pot10++;
+            //printf("NUM = %d\n", num);
+        }
+        //Pular a posicao do espaco que pode aparecer no posicao = posicao+1;
+        if(*(equacao+posicao+*(size_from_start)) == ' ')
+            posicao++;
+        *(size_from_start) = *(size_from_start) + posicao;
+
+        printf("NUM = %d, COEFICIENTE = %d\n", num, coeficiente);
+        //size_from_start vai até o \0 da string e retorna na main para usar o fseek.
+        //funcao inserir
+    }
+}                                                                           
+
 void read_equations(){
     FILE *arq = fopen("equacoes.txt", "r");
-    int i=0;
-    if(fp == NULL)
-        exit(1);
+    char *equacao = first_equation_to_string();
+    int size_equacao=0, num, coeficiente;
+
+    //GUARDAR EQUACAO NA MATRIZ ESPARSA
+    Store_Values_MatrizEsparsa(equacao, &size_equacao);
+    fseek(arq, size_equacao+1, SEEK_SET);//size_equacao+1 para ele pular a linha   
     do{
-        char equacao[]
-        fscanf(arq, "%s", equacao);
-        i++;
-        printf("O valor de i eh: %d", i);
-    }while(EOF(arq));
+        fscanf(arq,"%d %d",&num,&coeficiente);
+        printf("\nOS VALORES SAO: %d e %d\n", num, coeficiente);
+        //soma e subtracao
+    }while(!(feof(arq)));
+
+
+    //
+    //converter string em numero
+
+        /*PARA SOMA E SUBTRAÇÃO MELHOR LOGICA BY GILSON DAS MÃES MAGICAS.
+        fscanf(arq, "%d %d", &num, &coeficiente);
+    }while(feof(arq) == 0);*/
 }
