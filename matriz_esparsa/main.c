@@ -3,66 +3,32 @@
 int main(){
     ElementNode *matriz = initMatrix();
     
-    insertElement(matriz, 9, 0,0);    
-    insertElement(matriz, 8, 3,1);
-    insertElement(matriz, 10, 1, 3);
-    //insertElement(matriz, 7, 3,0);
-    //insertElement(matriz, 24, 2,0);
-    printf("%d\n", matriz->prox_col->prox_col->prox_col->prox_row->dataValue);
-
-
-
-
-    /*FILE *file;
+    insertElement(matriz, 8, 0, 91234);
+    insertElement(matriz, 2, 0, 67);
+    insertElement(matriz, 3, 0, 45);
+    insertElement(matriz, 3, 0, 9);
+    insertElement(matriz, 56, 0, 3);
+    insertElement(matriz, 1, 0, 0);
+    
+    insertElement(matriz, 34, 1, 91234);
+    insertElement(matriz, 78, 1, 6754);
+    insertElement(matriz, -8, 1, 45);
+    printf("%d\n", matriz->prox_col->prox_col->prox_col->prox_col->prox_row->prox_row->dataValue);
+    //printarMatriz(matriz->prox_col, matriz);
+    /*
+   
+    FILE *file;
     file = fopen("files/parametros.txt", "r");
-    int a, coeficiente, grau;
+    int a, coeficiente, grau, u=0;
     char c;
     fscanf(file,"%d", &a);
     for(int i=0;i<a;i++){
         do{
             fscanf(file,"%d %d", &coeficiente, &grau);
-            printf("%d %d ", coeficiente, grau);
+            printf("%d %d\n", coeficiente, grau);
+            insertElement(matriz, coeficiente, u, grau);
         }while((c = fgetc(file))!='\n');  
-        printf("\n");       
+        printf("\n");
+        u++;
     }*/
 }
-/*
-
-                ElementNode *new_element = allocElement(value, i, j), *new_col=allocHeader(-1, j),
-                *aux_row_col;
-                new_col->prox_col = aux_col->prox_col;
-                
-                aux_col->prox_col = new_col;
-                
-                new_col->prox_row = new_element;
-                
-                //verify if the line i exist in the matrix
-                //aux_row_colum = matrix;
-                while(aux_row_colum!=matrix){
-                    if(aux_row_colum->row == i){
-                        aux_row_col = aux_row_colum;
-                        while(aux_row_col->prox_col->col < j){
-                            aux_row_col = aux_row_col->prox_col;
-                        }
-                        aux_row_col->prox_col = new_element;
-                        new_element->prox_col = aux_row_colum;
-                        break;
-                    }
-                    else if(aux_row_colum->prox_row->row > i){
-                        ElementNode *new_row_1 = allocHeader(i, -1);
-
-                        new_row_1->prox_col = new_element;
-                        new_row_1->prox_row = aux_row->prox_row;
-                        aux_row->prox_row = new_row_1;
-                        new_element->prox_col = new_row_1;
-                    }//mudar == matrix
-                    else if(aux_row_colum->prox_row == aux_row){
-                        ElementNode *new_row_1 = allocHeader(i, -1);
-
-                        new_row_1->prox_row = matrix;
-                        new_row_1->prox_col = new_element;
-                        aux_row->prox_row = new_row_1;
-                    }
-                    aux_row_colum=aux_row_colum->prox_row;
-                }
-                */
