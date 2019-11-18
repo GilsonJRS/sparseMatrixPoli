@@ -14,5 +14,6 @@ ElementNode *initMatrix();
 ElementNode *allocHeader(int i, int j);
 void insertElement(ElementNode *matrix, int value, int i, int j);
 void removeElement(ElementNode *matrix, int i, int j);
-void printarMatriz(ElementNode *matriz, ElementNode *ref);
+void printarMatriz(ElementNode *matriz, ElementNode *ref, int row);
 void printarCol(ElementNode *col, ElementNode *ref);
+ElementNode *isInMatrix(ElementNode *matrix, int col, int row);
