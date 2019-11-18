@@ -2,24 +2,8 @@
 #include "sparse_matrix.h"
 int main(){
     ElementNode *matriz = initMatrix();
-    /*
-    insertElement(matriz, 8, 0, 91234);
-    insertElement(matriz, 2, 0, 67);
-    insertElement(matriz, 3, 0, 45);
-    insertElement(matriz, 3, 0, 9);
-    insertElement(matriz, 56, 0, 3);
-    insertElement(matriz, 1, 0, 0);
-    
-    insertElement(matriz, 34, 1, 91234);
-    insertElement(matriz, 78, 1, 6754);
-    insertElement(matriz, -8, 1, 45);
-    //printf("%d\n", matriz->prox_col->prox_col->prox_col->prox_col->prox_row->prox_row->dataValue);
-    //printarMatriz(matriz->prox_col, matriz);
-    */
-    
-   
     FILE *file;
-    file = fopen("files/parametros.txt", "r");
+    file = fopen("files/parametros3.txt", "r");
     int a, coeficiente, grau, u=0;
     char c;
     ElementNode *is;
@@ -35,24 +19,19 @@ int main(){
         }else{
             do{
                 fscanf(file,"%d %d", &coeficiente, &grau);
-
                 is = isInMatrix(matriz, grau, 0);
                 if(is!=NULL){
-                    is->dataValue += coeficiente;    
+                    is->dataValue += coeficiente; 
+                    is->prox_row->dataValue -= coeficiente;    
                 }else{
                     insertElement(matriz, coeficiente, 0, grau);
+                    insertElement(matriz, (-1)*coeficiente, 1, grau);
                 }
-                
-                is = isInMatrix(matriz, grau, 1);
-                if(is!=NULL){
-                    is->dataValue -= coeficiente;    
-                }else{
-                    insertElement(matriz, coeficiente, 1, grau);
-                }
-
             }while((c = fgetc(file))!='\n');
         }
     }
-    //printf("%d", is->dataValue);
+    printarMatriz(matriz->prox_col, matriz, 0);
+    printf("\n");
     printarMatriz(matriz->prox_col, matriz, 1);
+    printf("\n");
 }
