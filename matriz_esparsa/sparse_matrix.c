@@ -8,15 +8,14 @@ ElementNode *initMatrix(){
     head->col = -1;
     head->row = -1;
     head->dataValue = -1;
-    head->prox_row = NULL;
-    head->prox_col = NULL;
+    head->prox_row = head;
+    head->prox_col = head;
     return head;
 }
 
 /*
     alloc a element, with value value, at (x,y) = (i,j)
 */
-
 ElementNode *allocElement(int value, int i, int j){
     ElementNode *newElement = (ElementNode *)malloc(sizeof(ElementNode));
     newElement->dataValue = value;
@@ -41,9 +40,8 @@ ElementNode *allocHeader(int i, int j){
 }
 
 void insertElement(ElementNode *matrix, int value, int i, int j){
-    
-    //first ad-----------------OK
-    if(matrix->prox_row == NULL && matrix->prox_col == NULL){
+    //first ad
+    if(matrix->prox_row == matrix && matrix->prox_col == matrix){
         ElementNode *new_row = allocHeader(i, -1),*new_col = allocHeader(-1, j), 
         *new_element = allocElement(value, i , j);
         //change header's pointers
@@ -66,12 +64,10 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
         do{
             //colum exist
             if(aux_col->col == j){
-                //printf("Col ja existe\n");
                 aux_row_colum = matrix;
                 do{
-                    //row exists ----------------------------OK
+                    //row exists
                     if(aux_row_colum->row == i){
-                        //printf("entrada = %d\n", i);
                         ElementNode *aux_col_3 = aux_row_colum;
                         while(aux_col_3->col <= j && aux_col_3->prox_col != aux_row_colum){
                             aux_col_3=aux_col_3->prox_col;
@@ -84,25 +80,27 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                             while(node_aux_col->prox_row->row < i && node_aux_col->prox_row!=aux_col){
                                 node_aux_col=node_aux_col->prox_row;
                             }
-                            new_node->prox_row=node_aux_col->prox_row;
+                            new_node->prox_row = node_aux_col->prox_row;
                             node_aux_col->prox_row = new_node;
                             new_node->prox_col = aux_col_3->prox_col;
                             aux_col_3->prox_col = new_node;
                         }
                         break;
                     }
-                    //add between two nodes -------------------OK
+                    //add between two nodes
                     else if(aux_row_colum->prox_row->row > i){
+                        
                         ElementNode *new_element = allocElement(value, i, j), *new_row_1 = allocHeader(i, -1);
         
-                        new_element->prox_row = aux_col;
+                        new_element->prox_row = aux_col->prox_row;
+                        aux_col->prox_row = new_element;
                         new_row_1->prox_row = aux_row_colum->prox_row;
                         aux_row_colum->prox_row = new_row_1;
                         new_row_1->prox_col = new_element;
                         new_element->prox_col = new_row_1;
                         break;
                     }
-                    //else if desnecessauro? pensar depois -------------------------OK
+                    //else if desnecessario? pensar depois
                     else if(aux_row_colum->prox_row == matrix){
                         ElementNode *new_row_1 = allocHeader(i, -1), *new_element = allocElement(value, i, j),
                         *aux_col_3=aux_col;
@@ -127,6 +125,7 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                 larger than the new 
             */
             else if(aux_col->prox_col->col > j){
+                
                 ElementNode *new_element = allocElement(value, i, j), *new_col=allocHeader(-1, j),
                 *aux_row_col;
 
@@ -135,10 +134,12 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                 new_col->prox_row = new_element;
                 new_element->prox_row = new_col;
                 
-                //verify if the line i exist in the matrix
+                /*
+                    verify if the line i exist in the matrix
+                */
                 aux_row_colum = matrix;
                 do{;
-                    if(aux_row_colum->row == i){// ----------- OK
+                    if(aux_row_colum->row == i){
                         aux_row_col = aux_row_colum;
                         while(aux_row_col->prox_col->col < j){
                             aux_row_col = aux_row_col->prox_col;
@@ -147,7 +148,7 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                         aux_row_col->prox_col = new_element;
                         break;
                     }
-                    else if(aux_row_colum->prox_row->row > i){//
+                    else if(aux_row_colum->prox_row->row > i){
                         ElementNode *new_row_1 = allocHeader(i, -1);
 
                         new_row_1->prox_col = new_element;
@@ -155,9 +156,8 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                         aux_row_colum->prox_row = new_row_1;
                         new_element->prox_col = new_row_1;
                         break;
-                    }//mudar == matrix
+                    }
                     else if(aux_row_colum->prox_row == matrix){
-                        //printf("adsf");
                         ElementNode *new_row_1 = allocHeader(i, -1);
 
                         new_row_1->prox_row = matrix;
@@ -175,7 +175,7 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                 reaches the end of the col list
             */
             else if(aux_col->prox_col == matrix){
-                //printf("Chegou ao final da lista de colunas\n");
+                
                 ElementNode *new_element = allocElement(value, i, j), *new_col = allocHeader(-1, j),
                 *aux_row_1 = matrix;
                 
@@ -187,7 +187,7 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                     verify the existence of the row i
                 */
                 do{
-                    //row exist, so link with new element -------OK
+                    //row exist, so link with new element
                     if(aux_row_1->row == i){
                         ElementNode *aux_row_2 = aux_row_1;
                         while(aux_row_2->col < j && aux_row_2->prox_col != aux_row_1){
@@ -198,7 +198,7 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                         break;
                     }
                     /*
-                        finds a row bigger than i -----OK
+                        finds a row bigger than i
                     */
                     else if(aux_row_1->prox_row->row > i){
                         ElementNode *new_row = allocHeader(i, -1);
@@ -209,7 +209,7 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
                         break;
                     }
                     /*
-                        reaches the end of row's list and don't find i ---------OK
+                        reaches the end of row's list and don't find i
                     */
                     else if(aux_row_1->prox_row == matrix){
                         ElementNode *new_row = allocHeader(i, -1);
@@ -225,11 +225,36 @@ void insertElement(ElementNode *matrix, int value, int i, int j){
             }
 
             //go to next col
-            //aux_col_2 = aux_col_2->prox_col;
             aux_col = aux_col->prox_col;
         }while(aux_col!=matrix);
     }
 }
+/*
+ElementNode *isInMatrix(ElementNode *matrix,int col, int row){
+    ElementNode *aux_col;
+    if(row == 0){
+        aux_col = matrix->prox_row->prox_col;
+        while(aux_col!=matrix->prox_row && aux_col->col!=col){
+            aux_col=aux_col->prox_col;
+        }
+        if(aux_col==matrix->prox_row) return NULL;
+        if(aux_col->col == col){
+            
+            return aux_col->prox_row;
+        }
+        return NULL;
+    }else if(row == 1){
+        aux_col = matrix->prox_row->prox_row->prox_col;
+        while(aux_col!=matrix->prox_row->prox_row && aux_col->col!=col){
+            aux_col=aux_col->prox_col;
+        }
+        if(aux_col==matrix->prox_row->prox_row) return NULL;
+        if(aux_col->col == col){
+            return aux_col->prox_row->prox_row;
+        }
+        return NULL;
+    }
+}*/
 
 ElementNode *isInMatrix(ElementNode *matrix,int col, int row){
     ElementNode *aux_col = matrix->prox_col;
@@ -238,63 +263,171 @@ ElementNode *isInMatrix(ElementNode *matrix,int col, int row){
     }
     if(aux_col==matrix) return NULL;
     if(row == 0){
-        return aux_col->prox_row;
+        if(aux_col->prox_row->row == 0){
+            return aux_col->prox_row;
+        }
+        return NULL;
     }else if(row == 1){
-        return aux_col->prox_row->prox_row;
+        if(aux_col->prox_row->prox_row->row == 1){ 
+            return aux_col->prox_row->prox_row;
+        }else if(aux_col->prox_row->row == 1){
+            return aux_col->prox_row;
+        }
+        return NULL;
     }
     
 }
 
-void removeElement(ElementNode *matrix, int i, int j){
-    ElementNode *percorre = matrix;
-
-    while(percorre->col < j)
-        percorre = percorre->prox_col;
-    //verifica se a linha existe
-    if(percorre->col == j){
-        //percorre a matriz verticalmente
-        while(percorre->row < i)
-            percorre = percorre->prox_row;
-            //verifica se a coluna existe e remove o elemento
-        if((percorre->prox_row)->row == i){
-            ElementNode *remove = percorre->prox_row;
-            percorre->prox_row = (percorre->prox_row)->prox_row;
-            free(remove);
-            //verifica se a linha está vazia. (se o header aponta para si próprio)
-            if(percorre->prox_col == percorre){
-                //remove aquela linha, pois tem mais nenhum elemento
-                percorre = matrix;
-                //encontra linha i
-                while((percorre->prox_row)->row != i)
-                    percorre = percorre->prox_row;
-                ElementNode *remove = percorre->prox_row;
-                percorre->prox_row = (percorre->prox_row)->prox_row;
-                free(remove);                
+void printarMatriz(ElementNode *matriz, ElementNode *ref, int row, FILE **file){
+    if(matriz == ref || matriz == NULL){
+        printf("\n");
+        fprintf(*file, "\n");
+        return;
+    }else{
+        printarMatriz(matriz->prox_col, ref, row, file);
+        if(row == 0){
+            if(matriz->prox_row->row == 0){
+                printf("%d %d ",matriz->prox_row->dataValue, matriz->col);
+                fprintf(*file, "%d %d ", matriz->prox_row->dataValue, matriz->col);
             }
-            percorre = matrix;
-            //encontra coluna j
-            while((percorre->prox_col)->col != j)
-                percorre = percorre->prox_col;
-            //se tiver sem elementos remove a coluna
-            if((percorre->prox_col)->prox_row == percorre->prox_col){
-                ElementNode *remove = percorre->prox_col;
-                percorre->prox_col = (percorre->prox_col)->prox_col;
-                free(remove);
+        }else{
+            if(matriz->prox_row->prox_row->row == 1){
+                printf("%d %d ",matriz->prox_row->prox_row->dataValue, matriz->col);
+                fprintf(*file, "%d %d ", matriz->prox_row->prox_row->dataValue, matriz->col);
+            }else if(matriz->prox_row->row == 1){
+                printf("%d %d ",matriz->prox_row->dataValue, matriz->col);
+                fprintf(*file, "%d %d ", matriz->prox_row->dataValue, matriz->col);
             }
         }
     }
 }
 
-void printarMatriz(ElementNode *matriz, ElementNode *ref, int row){
-    if(matriz == ref){
-        //printf("end\n");
-        return;
+/*
+void removeElement(ElementNode *matrix, int i, int j){
+    ElementNode *percorre = matrix;
+
+    while(percorre->prox_col->col < j)
+        percorre = percorre->prox_col;
+    while(percorre->prox_row->row < i)
+        percorre = percorre->prox_row;
+
+    ElementNode *remove = percorre->prox_col->prox_row;
+
+    //verifica se o remover é realmente o elemento a ser removido, pq as vezes após remover algum elemento ele pode "bugar". Então,
+    //se o método de busca padrão nao funcionar (caminhar pela coluna e depois pela linha), ele faz o inverso, caminha pela linha e depois coluna. 
+ 
+    if(remove->col != j || remove->row != i){
+        percorre = matrix;
+        while(percorre->prox_row->row < i)
+            percorre = percorre->prox_row;
+        while(percorre->prox_col->col < j)
+            percorre = percorre->prox_col;
+        remove = percorre->prox_row->prox_col;
+    }
+
+    percorre->prox_row->prox_col = remove->prox_col;
+    percorre->prox_col->prox_row = remove->prox_row;
+    free(remove);
+    //eliminando coluna j se estiver vázia
+    percorre = matrix;
+    while(percorre->prox_col->col < j)
+        percorre = percorre->prox_col;
+    //verifica o header da coluna j aponta para ele mesmo
+    if(percorre->prox_col->prox_row == percorre->prox_col){
+        remove = percorre->prox_col;
+        percorre->prox_col = remove->prox_col;
+        free(remove);
+    }
+    //eliminando a linha i se estiver vázia
+    percorre = matrix;
+    while(percorre->prox_row->row < i)
+        percorre = percorre->prox_row;
+    //verifica o header da linha i aponta para ele mesmo
+    if(percorre->prox_row->prox_col == percorre->prox_row){
+        remove = percorre->prox_row;
+        percorre->prox_row = remove->prox_row;
+        free(remove);
+    }
+}
+
+
+
+          |
+    C -> [0] - > [1] -> [2]
+    |     |       |      |
+   [0]-> [ ] - > [X] -> [ ]
+    |     |       |      |
+   [1]-> [ ] - > [X] -> [ ]
+*/
+/*
+void removeElement(ElementNode *matrix, int i, int j){
+    ElementNode *aux_col = matrix, *general_aux, *remove;
+    while(aux_col->prox_col->col < j){
+        aux_col = aux_col->prox_col;
+    }
+    
+    if(i == 0){
+        general_aux = matrix->prox_row;
+        while(general_aux->prox_col->col != j){
+            general_aux=general_aux->prox_col;
+        }
+        remove = general_aux->prox_col;
+        general_aux->prox_col = remove->prox_col;
+        aux_col->prox_col->prox_row = remove->prox_row;
+        free(remove);
     }else{
-        printarMatriz(matriz->prox_col, ref, row);
-        if(row == 0){
-            printf("%d %d ",matriz->prox_row->dataValue, matriz->col);
-        }else{
-            printf("%d %d ",matriz->prox_row->prox_row->dataValue, matriz->col);
+        general_aux = matrix->prox_row->prox_row;
+        while(general_aux->prox_col->col != j){
+            general_aux=general_aux->prox_col;
+        }
+        remove = general_aux->prox_col;
+        if(aux_col->prox_col->prox_row != remove){
+            aux_col->prox_col->prox_row->prox_row = aux_col->prox_col;
+        }
+        general_aux->prox_col = remove->prox_col;
+        free(remove);
+    }
+}*/
+
+void removeZero(ElementNode *matrix, int i){
+    ElementNode *aux_col = (i==0) ? matrix->prox_row : matrix->prox_row->prox_row,
+    *aux_col_2 = matrix, *remove;
+    if(i == 0){
+        while(aux_col->prox_col != matrix->prox_row){
+            if(aux_col->prox_col->dataValue == 0){
+                remove = aux_col->prox_col;
+                aux_col->prox_col = remove->prox_col;
+                aux_col_2->prox_col->prox_row = remove->prox_row;
+                free(remove);
+                if(aux_col_2->prox_col->prox_row == aux_col_2->prox_col){
+                    remove = aux_col_2->prox_col;
+                    aux_col_2->prox_col = aux_col_2->prox_col->prox_col;
+                    free(remove);
+                }
+            }
+            aux_col = aux_col->prox_col;
+            aux_col_2 = aux_col_2->prox_col;
+        }
+    }else{
+        while(aux_col->prox_col != matrix->prox_row->prox_row){
+            if(aux_col->prox_col->dataValue == 0){
+                remove = aux_col->prox_col;
+                aux_col->prox_col = remove->prox_col;
+                if(aux_col_2->prox_col->prox_row->row == 0){
+                    aux_col_2->prox_col->prox_row->prox_row = aux_col_2->prox_col;
+                }else if(aux_col_2->prox_col->prox_row->row == 1){
+                    aux_col_2->prox_col->prox_row = aux_col_2->prox_col;
+                }
+                free(remove);
+                if(aux_col_2->prox_col->prox_row == aux_col_2->prox_col){
+                    remove = aux_col_2->prox_col;
+                    aux_col_2->prox_col = aux_col_2->prox_col->prox_col;
+                    free(remove);
+                }
+            }
+            aux_col = aux_col->prox_col;
+            aux_col_2 = aux_col_2->prox_col;
         }
     }
+    
 }
