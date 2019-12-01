@@ -280,22 +280,22 @@ ElementNode *isInMatrix(ElementNode *matrix,int col, int row){
 
 void printarMatriz(ElementNode *matriz, ElementNode *ref, int row, FILE **file){
     if(matriz == ref || matriz == NULL){
-        printf("\n");
+        //printf("\n");
         fprintf(*file, "\n");
         return;
     }else{
         printarMatriz(matriz->prox_col, ref, row, file);
         if(row == 0){
             if(matriz->prox_row->row == 0){
-                printf("%d %d ",matriz->prox_row->dataValue, matriz->col);
+                //printf("%d %d ",matriz->prox_row->dataValue, matriz->col);
                 fprintf(*file, "%d %d ", matriz->prox_row->dataValue, matriz->col);
             }
         }else{
             if(matriz->prox_row->prox_row->row == 1){
-                printf("%d %d ",matriz->prox_row->prox_row->dataValue, matriz->col);
+                //printf("%d %d ",matriz->prox_row->prox_row->dataValue, matriz->col);
                 fprintf(*file, "%d %d ", matriz->prox_row->prox_row->dataValue, matriz->col);
             }else if(matriz->prox_row->row == 1){
-                printf("%d %d ",matriz->prox_row->dataValue, matriz->col);
+                //printf("%d %d ",matriz->prox_row->dataValue, matriz->col);
                 fprintf(*file, "%d %d ", matriz->prox_row->dataValue, matriz->col);
             }
         }

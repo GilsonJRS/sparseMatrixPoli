@@ -42,19 +42,11 @@ int main(){
                 fscanf(file,"%d %d", &coeficiente, &grau);
                 is = isInMatrix(matriz, grau, 0);
                 if(is!=NULL){
-                    if(is->row!=-1){
-                        is->dataValue += coeficiente;
-                    }
+                    is->dataValue += coeficiente;
+                    is->prox_row->dataValue -= coeficiente;
                 }else{
                     insertElement(matriz, coeficiente, 0, grau);
-                }
-                is = isInMatrix(matriz, grau, 1);
-                if(is!=NULL){
-                    if(is->row!=-1){
-                        is->dataValue -= coeficiente;
-                    }
-                }else{
-                    insertElement(matriz, (-1)*coeficiente, 1, grau);
+                     insertElement(matriz, (-1)*coeficiente, 1, grau);
                 }
             }while((c = fgetc(file))!='\n');
         }
